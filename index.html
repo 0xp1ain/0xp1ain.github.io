@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile | clickjacking.me</title>
+
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #050505;
+        --bg-soft: #0b0b0b;
+        --panel: rgba(255, 255, 255, 0.025);
+        --panel-strong: rgba(255, 255, 255, 0.045);
+        --text: #f4f4f1;
+        --muted: #a3a39d;
+        --dim: #676761;
+        --line: rgba(255, 255, 255, 0.09);
+        --line-soft: rgba(255, 255, 255, 0.05);
+
+        --font-body:
+          "Pretendard Variable", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-display: "Newsreader", "Times New Roman", serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            circle at top,
+            rgba(255, 255, 255, 0.045),
+            transparent 28%
+          ),
+          linear-gradient(180deg, #090909 0%, #050505 22%, #050505 100%);
+        color: var(--text);
+        font-family: var(--font-body);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        width: min(1180px, calc(100vw - 48px));
+        margin: 0 auto;
+        padding: 32px 0 96px;
+      }
+
+      .frame {
+        border-top: 1px solid var(--line);
+      }
+
+      .hero {
+        display: block;
+        padding: 34px 0 72px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .hero-copy {
+        max-width: 880px;
+      }
+
+      .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(3.8rem, 8vw, 7.5rem);
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+        margin-bottom: 18px;
+        text-wrap: balance;
+      }
+
+      .hero-title span {
+        display: block;
+      }
+
+      .hero-alias {
+        margin-bottom: 22px;
+        display: block;
+        color: var(--text);
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 5vw, 3.8rem);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+      }
+
+      .hero-facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        margin-bottom: 26px;
+        color: var(--dim);
+        font-family: var(--font-mono);
+        font-size: 0.76rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .hero-facts span::before {
+        content: "/";
+        margin-right: 10px;
+        color: rgba(255, 255, 255, 0.22);
+      }
+
+      .hero-facts span:first-child::before {
+        content: none;
+        margin-right: 0;
+      }
+
+      .hero-summary {
+        max-width: 670px;
+        color: var(--muted);
+        font-size: 1.08rem;
+        line-height: 1.85;
+      }
+
+      .hero-summary strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .section {
+        display: grid;
+        grid-template-columns: 180px minmax(0, 1fr);
+        gap: 44px;
+        padding: 36px 0;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .section:last-of-type {
+        border-bottom: none;
+      }
+
+      .section-label {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--dim);
+        padding-top: 8px;
+      }
+
+      .section-body {
+        min-width: 0;
+      }
+
+      .entry-list {
+        display: grid;
+        gap: 22px;
+      }
+
+      .entry {
+        padding: 20px 0;
+        border-top: 1px solid var(--line-soft);
+      }
+
+      .entry:first-child {
+        border-top: none;
+        padding-top: 0;
+      }
+
+      .entry-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+      }
+
+      .entry-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+
+      .entry-meta {
+        color: var(--muted);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .entry-subtitle {
+        margin-bottom: 10px;
+        color: var(--dim);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .entry-copy {
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.8;
+      }
+
+      .capability-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 28px;
+      }
+
+      .capability-item {
+        padding: 14px 0;
+        border-top: 1px solid var(--line-soft);
+        color: var(--text);
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .panel {
+        padding: 22px;
+        border: 1px solid var(--line-soft);
+        background: linear-gradient(180deg, var(--panel), transparent);
+      }
+
+      .panel-title {
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .panel-kicker {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--dim);
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .panel-copy {
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .achievement-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .achievement {
+        display: grid;
+        grid-template-columns: 132px minmax(0, 1fr) auto;
+        align-items: baseline;
+        gap: 18px;
+        padding: 10px 0;
+        border-top: 1px solid var(--line-soft);
+      }
+
+      .achievement:first-child {
+        border-top: none;
+        padding-top: 0;
+      }
+
+      .achievement-rank {
+        color: var(--text);
+        font-family: var(--font-mono);
+        font-size: 0.86rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .achievement-title {
+        min-width: 0;
+        color: var(--text);
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
+      .achievement-year {
+        color: var(--dim);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+      }
+
+      .footer-note {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 28px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line-soft);
+        color: var(--dim);
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 980px) {
+        .page {
+          width: min(100vw - 28px, 1180px);
+          padding-top: 22px;
+        }
+
+        .section {
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+
+        .section {
+          padding: 28px 0;
+        }
+
+        .two-column {
+          grid-template-columns: 1fr;
+        }
+
+        .capability-list {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .footer-note,
+        .entry-head,
+        .achievement {
+          grid-template-columns: 1fr;
+          display: grid;
+        }
+
+        .hero {
+          padding: 34px 0 44px;
+        }
+
+        .hero-title {
+          font-size: clamp(3rem, 16vw, 4.6rem);
+        }
+
+        .hero-facts {
+          display: grid;
+          gap: 8px;
+        }
+
+        .hero-facts span::before {
+          content: none;
+          margin-right: 0;
+        }
+
+        .achievement {
+          gap: 6px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="frame">
+        <header class="hero">
+          <div class="hero-copy">
+            <h1 class="hero-title">
+              <span>Geonwoo Jeong</span>
+            </h1>
+            <div class="hero-alias">a.k.a Plain</div>
+            <div class="hero-facts">
+              <span>Security Researcher / CTF Player</span>
+              <span>Web2 Security / LLM</span>
+            </div>
+            <p class="hero-summary">
+              Focused on <strong>web security</strong> and
+              <strong>LLM</strong> research. Currently working at
+              <strong>Stealien</strong> while attending
+              <strong>Sunrin Internet High School</strong>. Also leading the
+              research team <strong>RewriteLab</strong> and competing with CTF
+              teams such as <strong>hypersonic</strong> and
+              <strong>infobahn</strong>.
+            </p>
+          </div>
+        </header>
+
+        <main>
+          <section class="section">
+            <div class="section-label">Capabilities</div>
+            <div class="section-body">
+              <div class="capability-list">
+                <div class="capability-item">
+                  Web penetration testing, whitebox auditing
+                </div>
+                <div class="capability-item">
+                  Web front-end/back-end development
+                </div>
+                <div class="capability-item">EVM smart contract auditing</div>
+                <div class="capability-item">SVM smart contract auditing</div>
+                <div class="capability-item">CTF challenge creation</div>
+                <div class="capability-item">LLM agent development</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Experience</div>
+            <div class="section-body">
+              <div class="entry-list">
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">Stealien</h2>
+                    <div class="entry-meta">2026.01 - Present</div>
+                  </div>
+                  <p class="entry-copy">
+                    A South Korea-based offensive cybersecurity company.
+                  </p>
+                  <p class="entry-copy">
+                    Conducting security research focused on LLM systems.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Affiliations</div>
+            <div class="section-body">
+              <div class="two-column">
+                <article class="panel">
+                  <span class="panel-kicker">Research Team</span>
+                  <h3 class="panel-title">RewriteLab</h3>
+                  <p class="panel-copy">
+                    Founder &amp; Operator.<br />An international research team
+                    focused on web security.
+                  </p>
+                </article>
+                <article class="panel">
+                  <span class="panel-kicker">CTF Teams</span>
+                  <h3 class="panel-title">hypersonic / infobahn</h3>
+                  <p class="panel-copy">
+                    Member.<br />Competing in CTF across web2 and web3
+                    categories.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Selected Achievements</div>
+            <div class="section-body">
+              <div class="achievement-list">
+                <div class="achievement">
+                  <div class="achievement-rank">3rd</div>
+                  <div class="achievement-title">
+                    SECCON CTF International Division
+                    <span style="color: var(--dim)">/ team Pochita</span>
+                  </div>
+                  <div class="achievement-year">2026</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">1st</div>
+                  <div class="achievement-title">
+                    TSG CTF
+                    <span style="color: var(--dim)">/ team Pochita</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">1st</div>
+                  <div class="achievement-title">
+                    Midnight Flag CTF Final
+                    <span style="color: var(--dim)">/ team hypersonic</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">1st</div>
+                  <div class="achievement-title">
+                    Whitehat Contest CTF Final
+                    <span style="color: var(--dim)">/ team 꼬키오</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">2nd</div>
+                  <div class="achievement-title">
+                    Cyber Conflict Exercise Final
+                    <span style="color: var(--dim)">/ team 꼬키오</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">6th</div>
+                  <div class="achievement-title">
+                    Blackhat MEA CTF
+                    <span style="color: var(--dim)">/ team DeadSec</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">2nd</div>
+                  <div class="achievement-title">
+                    LG U+ Security Hackathon CTF Final
+                    <span style="color: var(--dim)"
+                      >/ team 안전좋아좋아좋아</span
+                    >
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">2nd</div>
+                  <div class="achievement-title">Cyber Guardians CTF Final</div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">1st</div>
+                  <div class="achievement-title">
+                    Yeongnam Region Cyber Attack Defense CTF Final
+                    <span style="color: var(--dim)">/ team 꼬키오</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">3rd</div>
+                  <div class="achievement-title">
+                    Aliyun CTF <span style="color: var(--dim)">/ team FMC</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">3rd</div>
+                  <div class="achievement-title">
+                    COSS CTF
+                    <span style="color: var(--dim)">/ team 꼬키오</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">2nd</div>
+                  <div class="achievement-title">
+                    Sunrin Internet High School Hacking Festival CTF
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">8th</div>
+                  <div class="achievement-title">DSTA CDDC CTF Finalist</div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">8th</div>
+                  <div class="achievement-title">
+                    Snake CTF Finalist
+                    <span style="color: var(--dim)">/ team hypersonic</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Finalist</div>
+                  <div class="achievement-title">PoC CTF</div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Finalist</div>
+                  <div class="achievement-title">Whitehat Contest CTF</div>
+                  <div class="achievement-year">2023</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">2nd</div>
+                  <div class="achievement-title">BYUCTF</div>
+                  <div class="achievement-year">2023</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Finalist</div>
+                  <div class="achievement-title">CODEGATE CTF</div>
+                  <div class="achievement-year">2023</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">3rd</div>
+                  <div class="achievement-title">
+                    Korea Metaverse Developer Contest
+                  </div>
+                  <div class="achievement-year">2023</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">2nd</div>
+                  <div class="achievement-title">
+                    The Hacking Championship Junior
+                  </div>
+                  <div class="achievement-year">2023</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Finalist</div>
+                  <div class="achievement-title">WACON CTF</div>
+                  <div class="achievement-year">2023</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">1st</div>
+                  <div class="achievement-title">
+                    KOSPO Web Security Contest
+                  </div>
+                  <div class="achievement-year">2022</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">3rd</div>
+                  <div class="achievement-title">
+                    Korea Digital Media HS IT Olympiad Security Section
+                    <span style="color: var(--dim)">/ Hacking Defense</span>
+                  </div>
+                  <div class="achievement-year">2022</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">3rd</div>
+                  <div class="achievement-title">
+                    Korea Digital Media HS IT Olympiad Item Section
+                    <span style="color: var(--dim)">/ Entrepreneurship</span>
+                  </div>
+                  <div class="achievement-year">2021</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">2nd</div>
+                  <div class="achievement-title">Korea Code Fair Hackathon</div>
+                  <div class="achievement-year">2021</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Talks</div>
+            <div class="section-body">
+              <div class="entry-list">
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">.HACK : Vaults of Vulnerability</h2>
+                    <div class="entry-meta">DeFi Hacks / Conference</div>
+                  </div>
+                  <p class="entry-copy">
+                    A talk covering recurring vulnerability patterns and attack
+                    cases in DeFi environments.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      HSPACE 2nd Seminar : UNISWAP V1~V4 Hidden Security Threats
+                    </h2>
+                    <div class="entry-meta">UNISWAP / Seminar</div>
+                  </div>
+                  <p class="entry-copy">
+                    A session on architectural changes across Uniswap versions
+                    and the security risks hidden within them.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      Practical Web Penetration Testing Techniques
+                    </h2>
+                    <div class="entry-meta">
+                      Tech Lecture / Corporate Training
+                    </div>
+                  </div>
+                  <p class="entry-copy">
+                    An introduction to practical approaches for real-world web
+                    penetration testing.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      DeFiHackLabs & Blockchain Valley : DeFi 1-day Case
+                      Analysis
+                    </h2>
+                    <div class="entry-meta">DeFi Hacks / Lecture</div>
+                  </div>
+                  <p class="entry-copy">
+                    A lecture on quickly analyzing DeFi 1-day incidents based on
+                    real-world cases.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      DeFiHackLabs & Blockchain Valley : EVM Bug Cases
+                    </h2>
+                    <div class="entry-meta">DeFi Hacks / Lecture</div>
+                  </div>
+                  <p class="entry-copy">
+                    A session summarizing common vulnerability patterns and bug
+                    cases found in EVM-based projects.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      DeFiHackLabs & Blockchain Valley : How to Audit Smart
+                      Contracts
+                    </h2>
+                    <div class="entry-meta">DeFi Hacks / Lecture</div>
+                  </div>
+                  <p class="entry-copy">
+                    An introduction to the mindset and review flow required when
+                    starting smart contract audits.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      TeamH4C 3rd Student Hacking Note : True stories of student
+                      hackers
+                    </h2>
+                    <div class="entry-meta">Experience / Seminar</div>
+                  </div>
+                  <p class="entry-copy">
+                    A talk sharing early experiences in learning hacking and the
+                    lessons that came from them.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      TeamH4C 5th Hacking Owls Security : Story of CTF solving
+                      1-day challenge with 0-day
+                    </h2>
+                    <div class="entry-meta">Tech / Conference</div>
+                  </div>
+                  <p class="entry-copy">
+                    A presentation on the reasoning process behind solving a
+                    1-day CTF challenge through a 0-day perspective.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Research</div>
+            <div class="section-body">
+              <div class="entry-list">
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">Advanced XSLeaks Research</h2>
+                    <div class="entry-meta">RewriteLab / 2025</div>
+                  </div>
+                  <p class="entry-copy">
+                    Analyzed browser-based information disclosure techniques and
+                    documented XS-Leaks vectors that remain viable in modern web
+                    environments.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      Vulnerabilities in Oracles Based on Real-World Security
+                      Cases
+                    </h2>
+                    <div class="entry-meta">Blockchain Valley / 2024</div>
+                  </div>
+                  <p class="entry-copy">
+                    Analyzed vulnerabilities in oracle design and implementation
+                    based on real-world security incidents.
+                  </p>
+                </article>
+                <article class="entry">
+                  <div class="entry-head">
+                    <h2 class="entry-title">
+                      Proposal of a Web Vulnerability Automated Assessment
+                      Framework Using AI
+                    </h2>
+                    <div class="entry-meta">DBpia / 2023</div>
+                  </div>
+                  <p class="entry-copy">
+                    Proposed an AI-driven framework for automated web
+                    vulnerability assessment and studied the feasibility of
+                    evaluation automation.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Challenge Authoring</div>
+            <div class="section-body">
+              <div class="achievement-list">
+                <div class="achievement">
+                  <div class="achievement-rank">Writer</div>
+                  <div class="achievement-title">
+                    ACS (ASEAN Cyber Shield) CTF
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Writer</div>
+                  <div class="achievement-title">
+                    KAIST &amp; POSTECH Coalition CTF (KAPO CTF)
+                    <span style="color: var(--dim)">/ KAIST &amp; POSTECH</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Writer</div>
+                  <div class="achievement-title">idek CTF</div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Writer</div>
+                  <div class="achievement-title">Layer7 CTF</div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Writer</div>
+                  <div class="achievement-title">
+                    Chungcheong Area CTF Final
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Writer</div>
+                  <div class="achievement-title">
+                    HSPACE WAR Web Rounds CTF
+                    <span style="color: var(--dim)">/ HSPACE</span>
+                  </div>
+                  <div class="achievement-year">2025</div>
+                </div>
+                <div class="achievement">
+                  <div class="achievement-rank">Writer</div>
+                  <div class="achievement-title">
+                    BISC CTF
+                    <span style="color: var(--dim)"
+                      >/ Best of the Best Alumni</span
+                    >
+                  </div>
+                  <div class="achievement-year">2023</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <div class="footer-note">
+          <span>Geonwoo Jeong</span>
+          <span>Plain / clickjacking.me</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
